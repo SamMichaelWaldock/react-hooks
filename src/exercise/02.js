@@ -13,6 +13,7 @@ function Greeting({initialName = ''}) {
 
   React.useEffect(() => {
     window.localStorage.setItem('name', name);
+    // Woops already added the dependency array ^^
   }, [name])
 
   function handleChange(event) {
