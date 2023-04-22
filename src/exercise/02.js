@@ -4,8 +4,12 @@
 import * as React from 'react'
 
 function Greeting({initialName = ''}) {
-  const receivedName =  window.localStorage.getItem('name') ?? initialName;
-  const [name, setName] = React.useState(receivedName);
+  const someExpensiveComputation = () => {
+    const receivedName =  window.localStorage.getItem('name') ?? initialName;
+    return receivedName;
+  }
+
+  const [name, setName] = React.useState(someExpensiveComputation);
 
   React.useEffect(() => {
     window.localStorage.setItem('name', name);
