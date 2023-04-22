@@ -3,17 +3,33 @@
 
 import * as React from 'react'
 
-const useLocalStorageState = ({key, initialValue}) => {
+const useLocalStorageState = (key, initialValue = '', {
+    serialize = JSON.stringify, deserialize = JSON.parse} = {}
+  ) => {
   const someExpensiveComputation = () => {
-    const receivedValue =  window.localStorage.getItem(key) ?? initialValue;
-    return receivedValue;
+    const localStorageValue = window.localStorage.getItem(key);
+
+    if (localStorageValue) {
+      return deserialize(localStorageValue);
+    }
+
+    return typeof initialValue === 'function' ? initialValue() : initialValue;
   }
+
+  const prevKeyRef = React.useRef(key);
 
   const [value, setValue] = React.useState(someExpensiveComputation);
 
   React.useEffect(() => {
-    window.localStorage.setItem(key, value);
-  }, [key, value])
+    const prevKey = prevKeyRef.current;
+
+    if (prevKey !== key) {
+      window.localStorage.removeItem(prevKey);
+    }
+
+    prevKeyRef.current = key
+    return window.localStorage.setItem(key, serialize(value));
+  }, [key, serialize, value])
 
   return [value, setValue];
 }
