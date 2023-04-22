@@ -3,22 +3,28 @@
 
 import * as React from 'react'
 
-function Greeting({initialName = ''}) {
+const useLocalStorageState = ({key, initialValue}) => {
   const someExpensiveComputation = () => {
-    const receivedName =  window.localStorage.getItem('name') ?? initialName;
-    return receivedName;
+    const receivedValue =  window.localStorage.getItem(key) ?? initialValue;
+    return receivedValue;
   }
 
-  const [name, setName] = React.useState(someExpensiveComputation);
+  const [value, setValue] = React.useState(someExpensiveComputation);
 
   React.useEffect(() => {
-    window.localStorage.setItem('name', name);
-    // Woops already added the dependency array ^^
-  }, [name])
+    window.localStorage.setItem(key, value);
+  }, [key, value])
+
+  return [value, setValue];
+}
+
+function Greeting({initialName = ''}) {
+  const [name, setName] = useLocalStorageState({key: "name", initialName});
 
   function handleChange(event) {
     setName(event.target.value);
   }
+
   return (
     <div>
       <form>
