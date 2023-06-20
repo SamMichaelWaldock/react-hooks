@@ -5,7 +5,14 @@ import * as React from 'react'
 
 const Board = () => {
   // Managed states
-  const [squares, setSquares] = React.useState(Array(9).fill(null));
+  const [squares, setSquares] = React.useState(
+    () =>
+      JSON.parse(window.localStorage.getItem('squares')) || Array(9).fill(null),
+  )
+
+  React.useEffect(() => {
+    window.localStorage.setItem('squares', JSON.stringify(squares))
+  }, [squares])
 
   // Derived states
   const nextValue = calculateNextValue(squares);
@@ -16,7 +23,7 @@ const Board = () => {
     if (winner || squares[square]) {
       return
     }
-    
+
     const squaresCopy = [...squares]
     squaresCopy[square] = nextValue
     setSquares(squaresCopy)
