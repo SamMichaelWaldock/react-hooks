@@ -5,6 +5,7 @@ import * as React from 'react'
 import { PokemonDataView, PokemonForm, PokemonInfoFallback, fetchPokemon } from '../pokemon'
 
 const PokemonInfo = ({ pokemonName }) => {
+  const [status, setStatus] = React.useState('idle');
   const [pokemon, setPokemon] = React.useState(null);
   const [error, setError] = React.useState(null);
 
@@ -13,25 +14,35 @@ const PokemonInfo = ({ pokemonName }) => {
       return;
     }
 
-    setPokemon(null);
+    setStatus('pending');
     
     fetchPokemon(pokemonName)
-      .then(pokemon => setPokemon(pokemon))
-      .catch(error => setError(error))
+      .then(pokemon => {
+        setPokemon(pokemon);
+        setStatus('resolved');
+      })
+      .catch(error => {
+        setError(error);
+        setStatus('rejected');
+      })
   }, [pokemonName])
 
-  if (error) {
+  if (status === 'idle') {
+    return 'Submit a pokemon'
+  } else if (status === 'pending') {
+    return <PokemonInfoFallback name={pokemonName} />
+  } else if (status === 'rejected') {
     return (
-      <div role="alert">
-        There was an error: <pre style={{whiteSpace: 'normal'}}>{error.message}</pre>
+      <div>
+        There was an error:{' '}
+        <pre style={{whiteSpace: 'normal'}}>{error.message}</pre>
       </div>
     )
-  } else if (!pokemonName) {
-    return 'Submit a pokemon'
-  } else if (!pokemon) {
-    return <PokemonInfoFallback name={pokemonName} />
+  } else if (status === 'resolved') {
+    return <PokemonDataView pokemon={pokemon} />
   }
-  return <PokemonDataView pokemon={pokemon} />
+
+  return null;
 }
 
 const App = () => {
