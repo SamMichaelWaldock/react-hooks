@@ -1,30 +1,9 @@
 // useEffect: HTTP requests
 // http://localhost:3000/isolated/exercise/06.js
 
-import * as React from 'react'
-import { PokemonDataView, PokemonForm, PokemonInfoFallback, fetchPokemon } from '../pokemon'
-
-class ErrorBoundary extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { error: null };
-  }
-
-  static getDerivedStateFromError(error) {
-    return { error };
-  }
-
-  render() {
-    const {error} = this.state
-
-    if (error) {
-      return <this.props.FallbackComponent error={error} />
-    }
-
-    return this.props.children; 
-  }
-}
-
+import * as React from 'react';
+import { PokemonDataView, PokemonForm, PokemonInfoFallback, fetchPokemon } from '../pokemon';
+import { ErrorBoundary } from 'react-error-boundary';
 
 const PokemonInfo = ({ pokemonName }) => {
   const [state, setState] = React.useState({ status: 'idle', pokemon: null, error: null });
